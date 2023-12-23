@@ -1,12 +1,11 @@
 import os
 from abc import ABC, abstractmethod
+from src.vacancies import Vacancy
 import requests
-"""Создать абстрактный класс для работы с API сайтов с вакансиями.
-Реализовать классы, наследующиеся от абстрактного класса, для работы с конкретными платформами.
-Классы должны уметь подключаться к API и получать вакансии."""
 
 
 class SitesAPI(ABC):
+    """Абстрактный класс для работы с API сайтов с вакансиями."""
 
     @abstractmethod
     def get_vacancies(self):
@@ -14,6 +13,7 @@ class SitesAPI(ABC):
 
 
 class HeadHunterAPI(SitesAPI):
+    """Класс для работы с API hh.ru."""
 
     def __init__(self, text, region_name):
         self.url = "https://api.hh.ru/"
@@ -27,24 +27,52 @@ class HeadHunterAPI(SitesAPI):
                 if self.region_name in city['name'].lower():
                     return city['id']
 
-    def get_vacancies(self):
-
+    def get_vacancies(self) -> list:
+        list_vacancies = []
         data = requests.get(f'{self.url}vacancies', params={'text': self.text, 'search_field': "name",
                                                             'area': self.get_code_region()}).json()
-        print(data)
+
+        for item in data['items']:
+            vacancy = Vacancy(
+                item["employer"]["name"],
+                item["name"],
+                item["address"]["raw"],
+                item["alternate_url"],
+                item["salary"]["from"],
+                item["salary"]["to"],
+                item["salary"]["currency"]
+            )
+            list_vacancies.append(vacancy)
+
+        return list_vacancies
 
 
 class SuperJobAPI(SitesAPI):
+    """Класс для работы с API superjob.ru."""
 
     def __init__(self, text, region_name):
         self.url = "https://api.superjob.ru/2.0/vacancies/"
         self.text = text
         self.region_name = region_name.lower()
 
-    def get_vacancies(self):
+    def get_vacancies(self) -> list:
+        list_vacancies = []
         headers = {
             'X-Api-App-Id': os.getenv('JOB_API_KEY'),
         }
         data = requests.get(self.url, headers=headers, params={'keys': self.text, 'srws': 1, 'skwc': 'or',
                                                                'town': self.region_name}).json()
-        print(data)
+
+        for item in data['objects']:
+            vacancy = Vacancy(
+                item["firm_name"],
+                item["profession"],
+                item["address"],
+                item["link"],
+                item["payment_from"],
+                item["payment_to"],
+                item["currency"]
+            )
+            list_vacancies.append(vacancy)
+
+        return list_vacancies
