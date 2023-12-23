@@ -1,19 +1,15 @@
-from abc import ABC, abstractmethod
 """Создать класс для работы с вакансиями.
 В этом классе самостоятельно определить атрибуты, такие как название вакансии,
 ссылка на вакансию, зарплата, краткое описание или требования и т. п. (не менее четырех).
 Класс должен поддерживать методы сравнения вакансий между собой по зарплате
 и валидировать данные, которыми инициализируются его атрибуты."""
-"""Определить абстрактный класс, который обязывает реализовать методы для добавления вакансий в файл,
-получения данных из файла по указанным критериям и удаления информации о вакансиях.
-Создать класс для сохранения информации о вакансиях в JSON-файл.
-Дополнительно (по желанию) можно реализовать классы для работы с другими форматами,
-например с CSV-, Excel- или TXT-файлом."""
 
 
 class Vacancy:
+    """Класс для работы с вакансией."""
 
-    def __init__(self, company_name, name_vacancy, address, url_vacancy, salary_min, salary_max, salary_currency):
+    def __init__(self, company_name, name_vacancy, address, url_vacancy, salary_min, salary_currency,
+                 salary_max='Не указано'):
         self.company_name = company_name
         self.name_vacancy = name_vacancy
         self.address = address
@@ -23,7 +19,12 @@ class Vacancy:
         self.salary_currency = salary_currency
 
     def __str__(self):
-        return f'Вакансия располагается по адресу: {self.url_vacancy}'
+        return (f"Вакансия: {self.name_vacancy}\n"
+                f"Зарплата: от {self.salary_min} до {self.salary_max}\n"
+                f"Компания: {self.company_name}\n"
+                f"Адрес: {self.address}\n"
+                f"Подробнее о вакансии можно посмотреть по ссылке: {self.url_vacancy}\n\n")\
+
 
     def __eq__(self, other):
         return self.salary_min == other.salary_min
@@ -40,17 +41,18 @@ class Vacancy:
     def __gt__(self, other):
         return self.salary_min > other.salary_min
 
+    def get_dict_vacancy(self):
+        return {
+            'company_name': self.company_name,
+            'name_vacancy': self.name_vacancy,
+            'address': self.address,
+            'salary_min': self.salary_min,
+            'salary_max': self.salary_max,
+            'salary_currency': self.salary_currency,
+            'url_vacancy': self.url_vacancy
+        }
 
-class ControlVacancies(ABC):
 
-    @abstractmethod
-    def add_vacancy_to_file(self):
-        pass
+class Vacancies:
+    """Вспомогательный класс для обработки списка вакансий."""
 
-    @abstractmethod
-    def get_data_from_file(self):
-        pass
-
-    @abstractmethod
-    def remove_info_about_vacancy(self):
-        pass
