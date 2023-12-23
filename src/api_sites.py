@@ -1,7 +1,8 @@
 import os
 from abc import ABC, abstractmethod
-from src.vacancies import Vacancy
+from src.vacancy import Vacancy
 import requests
+import json
 
 
 class SitesAPI(ABC):
@@ -33,18 +34,26 @@ class HeadHunterAPI(SitesAPI):
                                                             'area': self.get_code_region()}).json()
 
         for item in data['items']:
-            vacancy = Vacancy(
-                item["employer"]["name"],
-                item["name"],
-                item["address"]["raw"],
-                item["alternate_url"],
-                item["salary"]["from"],
-                item["salary"]["to"],
-                item["salary"]["currency"]
-            )
-            list_vacancies.append(vacancy)
+            if item["salary"]["from"] is not None and item["salary"]["to"] is not None:
+                vacancy = Vacancy(
+                    item["employer"]["name"],
+                    item["name"],
+                    item["address"]["raw"],
+                    item["alternate_url"],
+                    item["salary"]["from"],
+                    item["salary"]["to"],
+                    item["salary"]["currency"]
+                )
+                list_vacancies.append(vacancy)
 
         return list_vacancies
+
+    @staticmethod
+    def create_file_with_vacancies(list_vacancies):
+
+        with open('HeadHunter_vacancies.json', 'a') as f:
+            for vacancy in list_vacancies:
+                json.dump(vacancy.get_dict_vacancy(), f)
 
 
 class SuperJobAPI(SitesAPI):
@@ -64,15 +73,23 @@ class SuperJobAPI(SitesAPI):
                                                                'town': self.region_name}).json()
 
         for item in data['objects']:
-            vacancy = Vacancy(
-                item["firm_name"],
-                item["profession"],
-                item["address"],
-                item["link"],
-                item["payment_from"],
-                item["payment_to"],
-                item["currency"]
-            )
-            list_vacancies.append(vacancy)
+            if item["payment_from"] is not None:
+                vacancy = Vacancy(
+                    item["firm_name"],
+                    item["profession"],
+                    item["address"],
+                    item["link"],
+                    item["payment_from"],
+                    item["payment_to"],
+                    item["currency"]
+                )
+                list_vacancies.append(vacancy)
 
         return list_vacancies
+
+    @staticmethod
+    def create_file_with_vacancies(list_vacancies):
+
+        with open('SuperJob_vacancies.json', 'a') as f:
+            for vacancy in list_vacancies:
+                json.dump(vacancy.get_dict_vacancy(), f)
