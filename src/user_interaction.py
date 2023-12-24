@@ -3,6 +3,8 @@ from src.saver import JsonSaver
 
 
 def user_interaction():
+    """Функция для взаимодействия с пользователем."""
+
     site_dict = {'1': 'HeadHunter', '2': 'SuperJob', '3': 'HeadHunter_и_SuperJob'}
     print('Добро пожаловать!')
     site = input("Выберите платформу для поиска вакансий:\n"
