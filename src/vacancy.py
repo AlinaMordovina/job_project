@@ -33,7 +33,9 @@ class Vacancy:
     def __gt__(self, other):
         return self.salary_min > other.salary_min
 
-    def get_dict_vacancy(self):
+    def get_dict_vacancy(self) -> dict:
+        """Из экземпляра класса получаем вакансию в формате словаря."""
+
         return {
             'company_name': self.company_name,
             'name_vacancy': self.name_vacancy,
@@ -46,6 +48,8 @@ class Vacancy:
 
     @staticmethod
     def from_dict_to_example_vacancy(item):
+        """Из формата словаря вакансию переводим в экземпляр класса."""
+
         return Vacancy(
                     item["company_name"],
                     item["name_vacancy"],

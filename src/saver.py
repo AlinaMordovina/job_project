@@ -31,6 +31,8 @@ class JsonSaver(Saver):
         self.file_name = f"{site}_vacancies.json"
 
     def add_vacancies_to_file(self, vacancies):
+        """Функция для создания файла json c вакансиями."""
+
         list_vacancies = []
         for vacancy in vacancies:
             list_vacancies.append(vacancy.get_dict_vacancy())
@@ -39,6 +41,8 @@ class JsonSaver(Saver):
             json.dump(list_vacancies, f, ensure_ascii=False, indent=2)
 
     def get_vacancies_from_file_by_salary(self, salary_min=0, salary_max=0):
+        """Функция предоставляет из json файла вакансии с указанной зарплатой."""
+
         list_vacancies_with_salary = []
 
         with open(self.file_name, 'r') as f:
@@ -53,6 +57,8 @@ class JsonSaver(Saver):
             return list_vacancies_with_salary
 
     def get_vacancies_from_file_sorted_by_salary(self):
+        """Функция сортирует вакансии из json файла по зарплате."""
+
         list_vacancies_with_sort = []
 
         with open(self.file_name, 'r') as f:
@@ -63,4 +69,6 @@ class JsonSaver(Saver):
         return list_vacancies_with_sort
 
     def remove_info_about_vacancies_from_file(self):
+        """Функция для очистки содержимого файла."""
+
         open(self.file_name, "w").close()

@@ -28,6 +28,8 @@ class HeadHunterAPI(SitesAPI):
                     return city['id']
 
     def get_vacancies(self) -> list:
+        """Функция для получения списка вакансий HeadHunter."""
+
         list_vacancies = []
         data = requests.get(f'{self.url}vacancies', params={'text': self.text, 'search_field': "name",
                                                             'area': self.get_code_city()}).json()
@@ -67,6 +69,8 @@ class SuperJobAPI(SitesAPI):
         self.region_name = region_name.lower()
 
     def get_vacancies(self) -> list:
+        """Функция для получения списка вакансий SuperJobAPI."""
+
         list_vacancies = []
         headers = {
             'X-Api-App-Id': os.getenv('JOB_API_KEY'),
