@@ -102,4 +102,4 @@ class SuperJobAPI(SitesAPI):
                     )
                     list_vacancies.append(vacancy)
 
-        return list_vacancies
+            return list_vacancies
