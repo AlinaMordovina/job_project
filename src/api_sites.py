@@ -2,7 +2,6 @@ import os
 from abc import ABC, abstractmethod
 from src.vacancy import Vacancy
 import requests
-import json
 
 
 class SitesAPI(ABC):
@@ -21,7 +20,7 @@ class HeadHunterAPI(SitesAPI):
         self.text = text
         self.region_name = region_name.lower()
 
-    def get_code_region(self):
+    def get_code_city(self) -> str:
         regions = requests.get(f'{self.url}areas/113').json()
         for region in regions['areas']:
             for city in region['areas']:
@@ -31,10 +30,20 @@ class HeadHunterAPI(SitesAPI):
     def get_vacancies(self) -> list:
         list_vacancies = []
         data = requests.get(f'{self.url}vacancies', params={'text': self.text, 'search_field': "name",
-                                                            'area': self.get_code_region()}).json()
+                                                            'area': self.get_code_city()}).json()
 
         for item in data['items']:
-            if item["salary"]["from"] is not None and item["salary"]["to"] is not None:
+            if item["salary"] is None:
+                continue
+            elif item["address"] is None:
+                continue
+            elif item["salary"]["from"] is None:
+                continue
+            elif item["salary"]["to"] is None:
+                continue
+            elif item["address"]['raw'] is None:
+                continue
+            else:
                 vacancy = Vacancy(
                     item["employer"]["name"],
                     item["name"],
@@ -47,13 +56,6 @@ class HeadHunterAPI(SitesAPI):
                 list_vacancies.append(vacancy)
 
         return list_vacancies
-
-    @staticmethod
-    def create_file_with_vacancies(list_vacancies):
-
-        with open('HeadHunter_vacancies.json', 'a') as f:
-            for vacancy in list_vacancies:
-                json.dump(vacancy.get_dict_vacancy(), f)
 
 
 class SuperJobAPI(SitesAPI):
@@ -73,7 +75,13 @@ class SuperJobAPI(SitesAPI):
                                                                'town': self.region_name}).json()
 
         for item in data['objects']:
-            if item["payment_from"] is not None:
+            if item["payment_from"] == 0:
+                continue
+            elif item["payment_to"] == 0:
+                continue
+            elif item["address"] is None:
+                continue
+            else:
                 vacancy = Vacancy(
                     item["firm_name"],
                     item["profession"],
@@ -86,10 +94,3 @@ class SuperJobAPI(SitesAPI):
                 list_vacancies.append(vacancy)
 
         return list_vacancies
-
-    @staticmethod
-    def create_file_with_vacancies(list_vacancies):
-
-        with open('SuperJob_vacancies.json', 'a') as f:
-            for vacancy in list_vacancies:
-                json.dump(vacancy.get_dict_vacancy(), f)

@@ -1,15 +1,7 @@
-"""Создать класс для работы с вакансиями.
-В этом классе самостоятельно определить атрибуты, такие как название вакансии,
-ссылка на вакансию, зарплата, краткое описание или требования и т. п. (не менее четырех).
-Класс должен поддерживать методы сравнения вакансий между собой по зарплате
-и валидировать данные, которыми инициализируются его атрибуты."""
-
-
 class Vacancy:
     """Класс для работы с вакансией."""
 
-    def __init__(self, company_name, name_vacancy, address, url_vacancy, salary_min, salary_currency,
-                 salary_max='Не указано'):
+    def __init__(self, company_name, name_vacancy, address, url_vacancy, salary_min, salary_max, salary_currency):
         self.company_name = company_name
         self.name_vacancy = name_vacancy
         self.address = address
@@ -20,7 +12,7 @@ class Vacancy:
 
     def __str__(self):
         return (f"Вакансия: {self.name_vacancy}\n"
-                f"Зарплата: от {self.salary_min} до {self.salary_max}\n"
+                f"Зарплата: от {self.salary_min} до {self.salary_max} {self.salary_currency}\n"
                 f"Компания: {self.company_name}\n"
                 f"Адрес: {self.address}\n"
                 f"Подробнее о вакансии можно посмотреть по ссылке: {self.url_vacancy}\n\n")\
@@ -46,13 +38,20 @@ class Vacancy:
             'company_name': self.company_name,
             'name_vacancy': self.name_vacancy,
             'address': self.address,
-            'salary_min': self.salary_min,
-            'salary_max': self.salary_max,
+            'salary_min': int(self.salary_min),
+            'salary_max': int(self.salary_max),
             'salary_currency': self.salary_currency,
             'url_vacancy': self.url_vacancy
         }
 
-
-class Vacancies:
-    """Вспомогательный класс для обработки списка вакансий."""
-
+    @staticmethod
+    def from_dict_to_example_vacancy(item):
+        return Vacancy(
+                    item["company_name"],
+                    item["name_vacancy"],
+                    item["address"],
+                    item["url_vacancy"],
+                    item["salary_min"],
+                    item["salary_max"],
+                    item["salary_currency"]
+                    )
