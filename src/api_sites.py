@@ -78,23 +78,28 @@ class SuperJobAPI(SitesAPI):
         data = requests.get(self.url, headers=headers, params={'keys': self.text, 'srws': 1, 'skwc': 'or',
                                                                'town': self.region_name}).json()
 
-        for item in data['objects']:
-            if item["payment_from"] == 0:
-                continue
-            elif item["payment_to"] == 0:
-                continue
-            elif item["address"] is None:
-                continue
-            else:
-                vacancy = Vacancy(
-                    item["firm_name"],
-                    item["profession"],
-                    item["address"],
-                    item["link"],
-                    item["payment_from"],
-                    item["payment_to"],
-                    item["currency"]
-                )
-                list_vacancies.append(vacancy)
+        if data.get('objects') is None:
+
+            return list_vacancies
+
+        else:
+            for item in data['objects']:
+                if item["payment_from"] == 0:
+                    continue
+                elif item["payment_to"] == 0:
+                    continue
+                elif item["address"] is None:
+                    continue
+                else:
+                    vacancy = Vacancy(
+                        item["firm_name"],
+                        item["profession"],
+                        item["address"],
+                        item["link"],
+                        item["payment_from"],
+                        item["payment_to"],
+                        item["currency"]
+                    )
+                    list_vacancies.append(vacancy)
 
         return list_vacancies
