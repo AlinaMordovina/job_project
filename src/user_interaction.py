@@ -23,7 +23,6 @@ def user_interaction():
             hh_api = HeadHunterAPI(keyword, city)
             super_job_api = SuperJobAPI(keyword, city)
             list_vacancies = hh_api.get_vacancies() + super_job_api.get_vacancies()
-            print(list_vacancies)
 
         if not list_vacancies:
             print(f"Вакансий в г. {city} по профессии {keyword} на {site_dict[site]} не найдено :(")
